@@ -1,0 +1,116 @@
+package RTM;
+
+import RTM.config.Config;
+import gov.nasa.worldwind.Configuration;
+import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.util.WWUtil;
+import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
+/**
+ * AppFrame is the main class of the RealTimeMonitor application.
+ * It's a JFrame that contains all application components.
+ * The frame structure is built in the initialize method of this class.
+ *
+ * @author Mikhail Khrypach
+ */
+public class AppFrame extends JFrame {
+    private static final long serialVersionUID = 426204280515L;
+    //private Dimension canvasSize = new Dimension(800, 600);
+    static String appName = "GRID RTM3D WW 09 " ;
+    //protected AppPanel wwjPanel;
+    //private SidePanel sidePnl;
+    //private JSplitPane split;
+    public AppFrame() {
+        this.initialize(true, false);
+    }
+
+    public AppFrame(boolean useSidePanel, boolean fullScreen) {
+        this.initialize(useSidePanel, fullScreen);
+    }
+
+    //useSidePanel - if true a side panel is used to represent all information
+    //and controls of the application. Otherwise Internal frames are used.
+    // IMP. -- Internal frames do not function properly in some enviroments!
+    //(at the moment knowsn enviromens: Mac OS X; Windows Vista 64)
+    //fullScreen - decorated or undecorated main frame.
+    protected void initialize(boolean useSidePanel, boolean fullScreen) {
+        //Change Content pane to desctop pane
+        this.setUndecorated(fullScreen);
+        //JDesktopPane is necessary for JInternalFrame
+        //Even when SidePanel is used it's still better to use jdp
+        // as some features (like GridGuide) appear in internal frames.
+        //JM: complete graphics and RealTimeMonitor init is now done by the line  below:
+        final RTMApplicationDesktop jdp = new RTMApplicationDesktop();
+        
+        this.setContentPane(jdp);
+        this.setJMenuBar(RTMMenuBar.getInstance());
+        this.pack();
+
+        // Center the application on the screen.
+        WWUtil.alignComponent(null, this, AVKey.CENTER);
+        this.setResizable(true);
+        // frame size when not maximised
+        this.setSize(Config.getFrameWidth(), Config.getFrameHeight());
+        // frame position
+        this.setLocation(Config.getXoffset(), Config.getYoffset());
+        // maximise the frame
+        setExtendedState(MAXIMIZED_BOTH);
+    
+        jdp.getWwd().requestFocusInWindow();
+    }
+
+    public static void main(String[] args) {
+
+        try {
+            // Set System L&F
+            UIManager.setLookAndFeel(
+                    UIManager.getSystemLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+            System.out.println(" Unsupported Look and Feel ");
+        } catch (ClassNotFoundException e) {
+            // handle exception
+            System.out.println(" Class not found exception " + e.toString());
+        } catch (InstantiationException e) {
+            // handle exception
+            System.out.println(" Instantiation exception " + e.toString());
+        } catch (IllegalAccessException e) {
+            // handle exception
+            System.out.println(" L&F, Illegal access exception " + e.toString());
+        }
+        if (Configuration.isMacOS() && appName != null) {
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", appName);
+        }
+
+        try {
+            final AppFrame frame = AppFrame.class.newInstance();
+            frame.setTitle(appName + Config.getVersion());
+            if (System.getProperty("WebStart") != null) {
+                if (System.getProperty("WebStart").equalsIgnoreCase("true")) {
+                    // running as webstart: set isApplet to true (this blocks GridGuide) and change the title
+                    frame.setTitle(appName + Config.getVersion() + " Java Web Start ");
+                    Config.setApplet(true);
+                }
+            }
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            java.awt.EventQueue.invokeLater(new Runnable() {
+
+                public void run() {
+                    frame.setVisible(true); // not ideal here, logos OK but malfunctionned side panel drawing 
+                                            // occurs at start (actually logos incorectly place even now at start 
+                    if(System.getProperty("rtm.noAbout")==null) {
+                         RealTimeMonitor.showAboutIFrame();
+                    }
+                }
+            });
+            //frame.setVisible(true); causes logos to be placed incorectly at start 
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+    }
+}

@@ -1,0 +1,134 @@
+
+<project name="RTM3DWW2009" default="all" basedir=".">
+    <property name="src" value="src"/>
+    <property name="lib" value="lib"/>
+    <property name="images" value="images"/>
+    <property name="config" value="src"/>
+    <property name="built" value="built"/>
+    <property name="dist" value="dist"/>
+    <property name="runtime.jar" value="rtm_3D_2009.jar"/>
+    <property name="build.classes.excludes" value="=**/*.java"/>
+
+
+  <!-- =================================================================== -->
+  <!-- Help                                                                -->
+  <!-- =================================================================== -->
+    <target name="help">
+        <echo>
+      Just run ant without any arguments!
+        </echo>
+    </target>
+
+  <!-- =================================================================== -->
+  <!-- target: all                                                         -->
+  <!-- =================================================================== -->
+    <target name="all" depends="jar">
+        <echo>
+      Building and installing all of the GridPP components ...
+        </echo>
+    </target>
+
+  <!-- =================================================================== -->
+  <!-- Functions                                                           -->
+  <!-- =================================================================== -->
+    <target name="prepare">
+        <echo>
+      Preparing directories...
+        </echo>
+        <mkdir dir="${built}"/>
+        <mkdir dir="${dist}"/>
+    </target>
+    <target name="compile" depends="prepare">
+        <echo>
+      Compiling...
+        </echo>
+        <javac source="1.6" target="1.6" debug="true" srcdir="${src}" destdir="${built}">
+            <classpath>
+                <pathelement location="${lib}/jogl.jar"/>
+                <pathelement location="${lib}/gluegen-rt.jar"/>
+                <pathelement location="${lib}/worldwind.jar"/>
+                <pathelement location="${lib}/worldwindx.jar"/>
+        <!-- for browsers only 
+                <pathelement location="${lib}/lobo.jar"/>
+                <pathelement location="${lib}/lobo-pub.jar"/>  -->
+            </classpath>
+            <compilerarg value="-Xlint"/>
+        </javac>
+    </target>
+    <target name="jar" depends="compile" >
+        <echo>
+      JARchiving...
+        </echo>
+        <jar jarfile="${dist}/${runtime.jar}">
+            <fileset dir="${built}"/>
+            <fileset dir="${images}"/>
+            <fileset dir="${config}">
+                <filename name="**/*.cnf"/>
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class" value="RTM.RTMApplication"/>
+                <attribute name="Class-Path" value="../${dist}/${runtime.jar} ../${lib}/jogl.jar ../${lib}/gluegen-rt.jar ../${lib}/worldwind.jar ../${lib}/worldwindx.jar" />
+            </manifest>
+        </jar>
+    </target>
+
+
+  <!-- =================================================================== -->
+  <!-- cleanAll -->
+  <!-- =================================================================== -->
+    <target name="clean">
+        <delete dir="${built}"/>
+        <delete dir="${dist}"/>
+    </target>
+  <!-- =================================================================== -->
+  <!-- run -->
+  <!-- =================================================================== -->
+    <target name="run">
+    <echo message="user.home = ${user.home}"/>   
+    
+        <java jar="${dist}/${runtime.jar}"
+           fork="true"
+           failonerror="true"
+           maxmemory="512m"
+           >
+            <sysproperty key="sun.java2d.noddraw" value="true"/>
+            <sysproperty key="java.library.path" value="${lib}"/>
+        </java>
+    </target>
+  <!-- =================================================================== -->
+  <!-- profile -->
+  <!-- =================================================================== -->
+  <target name="profile" description="Profile Project">
+        <fail unless="netbeans.home">This target can only run inside the NetBeans IDE.</fail>
+        <nbprofiledirect>
+          <classpath>
+            <pathelement location="${dist}/${runtime.jar}"/>
+            <pathelement path="${java.class.path}"/>
+          </classpath>
+        </nbprofiledirect>
+        <java jar="${dist}/${runtime.jar}"
+           fork="true"
+           failonerror="true"
+           maxmemory="512m"
+           >
+            <jvmarg value="${profiler.info.jvmargs.agent}"/>
+            <sysproperty key="sun.java2d.noddraw" value="true"/>
+            <sysproperty key="java.library.path" value="${lib}"/>
+        </java>
+    </target>
+  <!-- =============================================================== -->
+  <!-- javadoc -->
+  <!-- =============================================================== -->
+    <target name="javadoc">
+    <javadoc packagenames="RTM.*"
+           sourcepath="src"
+           excludepackagenames="RTM.test.*"
+           defaultexcludes="yes"
+           destdir="docs/api"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="3D RTM  API">
+    </javadoc>
+    </target>
+</project>

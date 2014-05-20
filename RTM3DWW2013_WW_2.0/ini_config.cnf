@@ -1,0 +1,93 @@
+[properties]
+# set to yes if you want to enable full screen mode on a Mac.
+# The frame will have a small arrow on the top right, which when pressed hides
+# away Mac's system menu which includes the RTM menu. 
+# Anything else than 'yes' means 'no' ;-)
+
+# One other platforms this option has no effect. There is no system menu and
+# the RTM menu may be hidden by clicking the "Hide Me" button. Press 'm' to restore. 
+
+fullscreen=yes
+
+# if you want to have the entire screen available for the application (equivalent
+# to pressing the arrow, as said above,  AT STARTUP, set the property below to yes
+
+startfullscreen=yes
+
+#(the above option might be used to get a full screen (w/o the RTM menu) on
+#other platforms in the future)
+
+[animation]
+# enable spin at startup. comment out to disable animations at startup.
+# other possible values: path
+
+enabled=spin
+
+[spin]
+latitude=50.
+# set to 24. to get a full turn within an hour
+speed=24.0
+
+[path]
+# full globe in the picture, set zoom to 1.
+
+altitude = 1.0E07
+
+# time to reach [seconds], the place, at latitude [deg], longitude [deg], at magnification [decimal], sleep there for [seconds].
+# no spaces in place names.
+
+time=5
+place=London,UK
+latitude = 51.0
+longitude = 0.0
+zoom=4.
+sleep=2
+
+time=5
+place=Paris,Fr
+latitude=48.8
+longitude=2.30
+zoom=3.
+sleep=2
+
+time=5
+place=Munich,De
+latitude = 48.6
+longitude = 11.5
+zoom=3.
+sleep=2
+
+time=5
+place=Krakow,PL
+latitude = 50.
+longitude = 20.
+zoom=2.
+sleep=1
+
+time=5
+place=Europe,EU
+latitude=50.0
+longitude=26.0
+zoom=2.
+sleep=3
+
+time=5
+place=Asia
+longitude=75.0
+latitude=46.0
+zoom=2.
+sleep=1
+
+time=5
+place=Pacific
+longitude=-120.0
+latitude=20.0
+zoom=1.0
+sleep=3
+
+time=5
+place=NorthAmerica
+longitude=-97.0
+latitude=41.0
+zoom=2.0
+sleep=3
